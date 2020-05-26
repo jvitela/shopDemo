@@ -1,2 +1,1 @@
-client/*/node_modules
-lambdas/*/node_modules
+node_modules

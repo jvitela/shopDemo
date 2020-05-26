@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "test": "jest",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+  },
+  "devDependencies": {
+    "jest": "^25.4.0"
+  }
+}

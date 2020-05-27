@@ -14,6 +14,7 @@ async function createVoucher(dynamoDB, event) {
 
     const voucher = {
       voucherId: payload.orderId,
+      code: "5_EUR_DISCOUNT",
       discount: 5,
       status: "READY",
     };
@@ -21,6 +22,7 @@ async function createVoucher(dynamoDB, event) {
     const request = {
       Item: voucher,
       TableName: "shop-demo__voucher",
+      ConditionExpression: "attribute_not_exists(voucherId)",
     };
 
     await dynamoDB.put(request).promise();
@@ -28,7 +30,10 @@ async function createVoucher(dynamoDB, event) {
     console.info(`Created 5 EUR voucher for order ${payload.orderId}`);
     return {
       statusCode: 201,
-      body: JSON.stringify(voucher),
+      body: JSON.stringify({
+        code: voucher.code,
+        discount: voucher.discount,
+      }),
     };
   } catch (err) {
     console.error("Failed to create voucher", err);

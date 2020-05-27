@@ -18,8 +18,8 @@ describe("createVoucher", () => {
       body: expect.any(String),
     });
     expect(JSON.parse(response.body)).toMatchObject({
-      voucherId: expect.any(String),
-      discount: 5,
+      code: expect.any(String),
+      discount: expect.any(Number),
     });
     expect(dynamoDB.put).toHaveBeenCalledTimes(1);
   });

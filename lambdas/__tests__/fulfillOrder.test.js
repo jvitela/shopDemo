@@ -10,10 +10,12 @@ describe("fulfillOrder", () => {
     };
     const lambda = {
       invoke: fnSuccessReq({
-        statusCode: 201,
-        body: JSON.stringify({
-          code: "abc",
-          discount: 5,
+        Payload: JSON.stringify({
+          statusCode: 201,
+          body: JSON.stringify({
+            code: "abc",
+            discount: 5,
+          }),
         }),
       }),
     };
@@ -27,7 +29,7 @@ describe("fulfillOrder", () => {
         },
       }),
       update: fnSuccessReq({
-        Item: {
+        Attributes: {
           orderId: "123",
           version: 2,
           status: "PROCESSING",
@@ -60,7 +62,9 @@ describe("fulfillOrder", () => {
     };
     const lambda = {
       invoke: fnSuccessReq({
-        statusCode: 204,
+        Payload: JSON.stringify({
+          statusCode: 204,
+        }),
       }),
     };
     const dynamoDB = {
@@ -73,7 +77,7 @@ describe("fulfillOrder", () => {
         },
       }),
       update: fnSuccessReq({
-        Item: {
+        Attributes: {
           orderId: "123",
           version: 2,
           status: "PROCESSING",
@@ -103,7 +107,9 @@ describe("fulfillOrder", () => {
     };
     const lambda = {
       invoke: fnSuccessReq({
-        statusCode: 204,
+        Payload: JSON.stringify({
+          statusCode: 204,
+        }),
       }),
     };
     let count = 0;
@@ -126,7 +132,7 @@ describe("fulfillOrder", () => {
                 reject(new Error("The conditional request failed."));
               }
               resolve({
-                Item: {
+                Attributes: {
                   orderId: "123",
                   version: 1,
                   status: "CREATED",
@@ -157,7 +163,9 @@ describe("fulfillOrder", () => {
     };
     const lambda = {
       invoke: fnSuccessReq({
-        statusCode: 204,
+        Payload: JSON.stringify({
+          statusCode: 204,
+        }),
       }),
     };
     const dynamoDB = {

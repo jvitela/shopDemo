@@ -7,6 +7,7 @@ const updateOrder = require("./updateOrder");
 */
 async function fulfillOrder(dynamoDB, lambda, event) {
   try {
+    debugger;
     const request = JSON.parse(event.body);
     const order = await updateOrder(dynamoDB, request.orderId);
     const voucher = await createVoucher(lambda, order);

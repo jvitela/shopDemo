@@ -31,6 +31,7 @@ async function createOrder(dynamoDB, event) {
         items: JSON.stringify(shoppingCart.items),
       },
       TableName: "shop-demo__order",
+      ConditionExpression: "attribute_not_exists(orderId)",
     };
 
     await dynamoDB.put(request).promise();

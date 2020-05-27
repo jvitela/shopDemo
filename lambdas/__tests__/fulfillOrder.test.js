@@ -1,10 +1,5 @@
 const fulfillOrder = require("../fulfillOrder/fulfillOrder");
-const {
-  fnSuccess,
-  fnError,
-  fnSuccessReq,
-  fnErrorReq,
-} = require("../TestUtils");
+const { fnSuccessReq, fnErrorReq } = require("../TestUtils");
 
 describe("fulfillOrder", () => {
   test("Returns statusCode 200 on success", async () => {
@@ -150,7 +145,7 @@ describe("fulfillOrder", () => {
     });
     expect(dynamoDB.get).toHaveBeenCalledTimes(2);
     expect(dynamoDB.update).toHaveBeenCalledTimes(2);
-    expect(console.error).toHaveBeenCalled();
+    expect(console.error).not.toBeCalled();
     expect(console.info).toHaveBeenCalled();
   });
 
@@ -193,9 +188,6 @@ describe("fulfillOrder", () => {
         orderId: "123",
       }),
     };
-    const paymentApi = {
-      isPaymentCompleted: fnSuccess(false),
-    };
     const dynamoDB = {
       get: fnSuccessReq({
         Item: {
@@ -206,10 +198,10 @@ describe("fulfillOrder", () => {
         },
       }),
     };
-    const response = await fulfillOrder(dynamoDB, null, paymentApi, event);
+    const response = await fulfillOrder(dynamoDB, null, event);
     expect(response).toMatchObject({
       statusCode: 500,
-      body: "Failed to create voucher",
+      body: "Failed to fulfill order",
     });
     expect(console.error).toHaveBeenCalled();
   });
@@ -220,17 +212,38 @@ describe("fulfillOrder", () => {
         orderId: "123",
       }),
     };
-    const paymentApi = {
-      isPaymentCompleted: fnSuccess(false),
-    };
     const dynamoDB = {
-      get: fnErrorReq(new Error("Not found")),
+      get: fnSuccessReq({
+        Item: undefined,
+      }),
     };
-    const response = await fulfillOrder(dynamoDB, null, paymentApi, event);
+    const response = await fulfillOrder(dynamoDB, null, event);
     expect(response).toMatchObject({
       statusCode: 500,
-      body: "Failed to create voucher",
+      body: "Failed to fulfill order",
     });
     expect(console.error).toHaveBeenCalled();
+    expect(console.error.mock.calls[0][0]).toEqual("Failed to fulfill order");
+    expect(console.error.mock.calls[0][1]).toMatchObject({
+      message: "Order not found",
+    });
+  });
+
+  test("Returns statusCode 500 when fails to read order", async () => {
+    const event = {
+      body: JSON.stringify({
+        orderId: "123",
+      }),
+    };
+    const error = new Error("Internal");
+    const dynamoDB = {
+      get: fnErrorReq(error),
+    };
+    const response = await fulfillOrder(dynamoDB, null, event);
+    expect(response).toMatchObject({
+      statusCode: 500,
+      body: "Failed to fulfill order",
+    });
+    expect(console.error).lastCalledWith("Failed to fulfill order", error);
   });
 });

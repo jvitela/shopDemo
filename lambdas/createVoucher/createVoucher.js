@@ -5,6 +5,7 @@
 */
 async function createVoucher(dynamoDB, event) {
   try {
+    console.info("Received event", event);
     const payload = JSON.parse(event.body);
 
     if (payload.amount <= 100) {
@@ -36,7 +37,7 @@ async function createVoucher(dynamoDB, event) {
       }),
     };
   } catch (err) {
-    console.error("Failed to create voucher", err);
+    console.error("Failed to create voucher", err, event);
     return {
       statusCode: 500,
       body: "Failed to create voucher",

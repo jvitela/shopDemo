@@ -3,9 +3,10 @@ const { fnSuccessReq, fnErrorReq } = require("../TestUtils");
 
 describe("createOrder", () => {
   test("Returns statusCode 201 on success", async () => {
+    const items = [{ id: "item01", qty: 5 }];
     const event = {
       body: JSON.stringify({
-        items: [{ id: "item01", qty: 5 }],
+        items,
       }),
     };
     const dynamoDB = {
@@ -21,6 +22,15 @@ describe("createOrder", () => {
       amount: expect.any(Number),
     });
     expect(dynamoDB.put).toHaveBeenCalledTimes(1);
+    expect(dynamoDB.put.mock.calls[0][0]).toMatchObject({
+      Item: expect.objectContaining({
+        orderId: expect.any(String),
+        version: expect.any(Number),
+        status: "CREATED",
+        amount: expect.any(Number),
+        items: JSON.stringify(items),
+      }),
+    });
   });
 
   test("Returns statusCode 500 on error", async () => {

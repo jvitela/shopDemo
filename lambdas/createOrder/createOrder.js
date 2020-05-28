@@ -28,6 +28,7 @@ async function createOrder(dynamoDB, event) {
         orderId,
         version: 1,
         status: "CREATED",
+        amount,
         items: JSON.stringify(shoppingCart.items),
       },
       TableName: "shop-demo__order",

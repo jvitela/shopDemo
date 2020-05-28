@@ -1,13 +1,22 @@
 import React from "react";
 import { fulfillOrder } from "./OrdersApi";
 
-export function FulfillOrder({ order, onSuccess, onError, disabled }) {
+export function FulfillOrder({
+  order,
+  onLoading,
+  onSuccess,
+  onError,
+  disabled,
+}) {
   async function onClick() {
+    onLoading(true);
     try {
       const response = await fulfillOrder(order.orderId);
       onSuccess(response);
     } catch (err) {
       onError(err.message);
+    } finally {
+      onLoading(false);
     }
   }
 

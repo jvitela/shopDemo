@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { createOrder } from "./OrdersApi";
 
-export function CreateOrder({ onSuccess, onError, disabled }) {
+export function CreateOrder({ onLoading, onSuccess, onError, disabled }) {
   const [items, setItems] = useState([]);
 
   async function onClick() {
+    onLoading(true);
     try {
       const request = items.map((item) => ({
         id: item.id,
         qty: 1,
       }));
+
       const order = await createOrder(request);
       onSuccess({
         ...order,
@@ -17,6 +19,8 @@ export function CreateOrder({ onSuccess, onError, disabled }) {
       });
     } catch (err) {
       onError(err);
+    } finally {
+      onLoading(false);
     }
   }
 

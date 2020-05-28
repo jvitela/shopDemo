@@ -3,9 +3,11 @@ import { StepsHeader } from "./StepsHeader";
 import { CreateOrder } from "./CreateOrder";
 import { FulfillOrder } from "./FulfillOrder";
 import { Confirmation } from "./Confirmation";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 function App() {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [order, setOrder] = useState(null);
   const [voucher, setVoucher] = useState(null);
@@ -64,6 +66,7 @@ function App() {
         {step === 1 && (
           <CreateOrder
             disabled={step !== 1}
+            onLoading={setLoading}
             onSuccess={onCreateSuccess}
             onError={displayError}
           />
@@ -73,6 +76,7 @@ function App() {
           <FulfillOrder
             order={order}
             disabled={step !== 2}
+            onLoading={setLoading}
             onSuccess={onFulfillSuccess}
             onError={displayError}
           />
@@ -82,6 +86,7 @@ function App() {
           <Confirmation order={order} voucher={voucher} onClick={onReset} />
         )}
       </div>
+      {loading && <LoadingIndicator />}
     </div>
   );
 }

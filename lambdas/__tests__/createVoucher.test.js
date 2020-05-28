@@ -5,8 +5,7 @@ describe("createVoucher", () => {
   test("Returns statusCode 201 on success", async () => {
     const event = {
       body: JSON.stringify({
-        orderId: "123",
-        amount: 200,
+        amount: 10,
       }),
     };
     const dynamoDB = {
@@ -19,34 +18,15 @@ describe("createVoucher", () => {
     });
     expect(JSON.parse(response.body)).toMatchObject({
       code: expect.any(String),
-      discount: expect.any(Number),
+      discount: 10,
     });
     expect(dynamoDB.put).toHaveBeenCalledTimes(1);
-  });
-
-  test("Returns statusCode 204 if order does not qualify", async () => {
-    const event = {
-      body: JSON.stringify({
-        orderId: "321",
-        amount: 20,
-      }),
-    };
-    const dynamoDB = {
-      put: fnErrorReq(),
-    };
-    const response = await createVoucher(dynamoDB, event);
-    expect(response).toMatchObject({
-      statusCode: 204,
-    });
-    expect(response.body).toBeUndefined();
-    expect(dynamoDB.put).not.toHaveBeenCalled();
   });
 
   test("Returns statusCode 500 on error", async () => {
     const event = {
       body: JSON.stringify({
-        orderId: "123",
-        amount: 200,
+        amount: 20,
       }),
     };
     const dynamoDB = {
@@ -55,7 +35,7 @@ describe("createVoucher", () => {
     const response = await createVoucher(dynamoDB, event);
     expect(response).toMatchObject({
       statusCode: 500,
-      body: "Failed to create voucher",
+      body: JSON.stringify({ message: "Failed to create voucher" }),
     });
     expect(dynamoDB.put).toHaveBeenCalledTimes(1);
   });

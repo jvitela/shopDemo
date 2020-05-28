@@ -48,7 +48,7 @@ async function createOrder(dynamoDB, event) {
     console.error("Failed to create order", err);
     return {
       statusCode: 500,
-      body: "Failed to create order",
+      body: JSON.stringify({ message: "Failed to create order" }),
     };
   }
 }

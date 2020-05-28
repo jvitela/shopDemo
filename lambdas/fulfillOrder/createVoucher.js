@@ -1,11 +1,15 @@
 async function createVoucher(lambda, order) {
+  if (order.amount <= 100) {
+    console.info(`Order ${order.orderId} does not qualify for voucher`);
+    return null;
+  }
+
   try {
     const params = {
       FunctionName: "shopDemo_createVoucher",
       Payload: JSON.stringify({
         body: JSON.stringify({
-          orderId: order.orderId,
-          amount: order.amount,
+          amount: 5,
         }),
       }),
     };
@@ -15,12 +19,8 @@ async function createVoucher(lambda, order) {
       response
     );
 
-    const result = JSON.parse(response.Payload);
-    if (result && result.statusCode === 201) {
-      return JSON.parse(result.body);
-    } else {
-      console.info("Order not qualified for voucher", response);
-    }
+    const payload = JSON.parse(response.Payload);
+    return JSON.parse(payload.body);
   } catch (err) {
     console.error(`Failed to create voucher for ${order.orderId}`, err);
   }

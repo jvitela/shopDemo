@@ -35,7 +35,7 @@ describe("createOrder", () => {
     const response = await createOrder(dynamoDB, event);
     expect(response).toMatchObject({
       statusCode: 500,
-      body: "Failed to create order",
+      body: JSON.stringify({ message: "Failed to create order" }),
     });
     expect(dynamoDB.put).toHaveBeenCalledTimes(1);
   });

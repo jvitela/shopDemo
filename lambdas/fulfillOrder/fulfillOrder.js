@@ -19,7 +19,7 @@ async function fulfillOrder(dynamoDB, lambda, event) {
     console.error("Failed to fulfill order", err);
     return {
       statusCode: 500,
-      body: "Failed to fulfill order",
+      body: JSON.stringify({ message: "Failed to fulfill order" }),
     };
   }
 }

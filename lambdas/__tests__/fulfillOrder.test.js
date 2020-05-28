@@ -61,11 +61,7 @@ describe("fulfillOrder", () => {
       }),
     };
     const lambda = {
-      invoke: fnSuccessReq({
-        Payload: JSON.stringify({
-          statusCode: 204,
-        }),
-      }),
+      invoke: fnErrorReq(),
     };
     const dynamoDB = {
       get: fnSuccessReq({
@@ -73,7 +69,7 @@ describe("fulfillOrder", () => {
           orderId: "123",
           version: 1,
           status: "CREATED",
-          amount: 200,
+          amount: 80,
         },
       }),
       update: fnSuccessReq({
@@ -81,7 +77,7 @@ describe("fulfillOrder", () => {
           orderId: "123",
           version: 2,
           status: "PROCESSING",
-          amount: 200,
+          amount: 80,
         },
       }),
     };
@@ -96,6 +92,7 @@ describe("fulfillOrder", () => {
     });
     expect(dynamoDB.get).toHaveBeenCalledTimes(1);
     expect(dynamoDB.update).toHaveBeenCalledTimes(1);
+    expect(lambda.invoke).not.toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });
 
@@ -105,13 +102,6 @@ describe("fulfillOrder", () => {
         orderId: "123",
       }),
     };
-    const lambda = {
-      invoke: fnSuccessReq({
-        Payload: JSON.stringify({
-          statusCode: 204,
-        }),
-      }),
-    };
     let count = 0;
     const dynamoDB = {
       get: fnSuccessReq({
@@ -119,7 +109,7 @@ describe("fulfillOrder", () => {
           orderId: "123",
           version: 1,
           status: "CREATED",
-          amount: 200,
+          amount: 50,
         },
       }),
 
@@ -134,16 +124,16 @@ describe("fulfillOrder", () => {
               resolve({
                 Attributes: {
                   orderId: "123",
-                  version: 1,
+                  version: 2,
                   status: "CREATED",
-                  amount: 200,
+                  amount: 50,
                 },
               });
             }, 100)
           ),
       })),
     };
-    const response = await fulfillOrder(dynamoDB, lambda, event);
+    const response = await fulfillOrder(dynamoDB, null, event);
 
     expect(response).toMatchObject({
       statusCode: 200,
@@ -161,25 +151,18 @@ describe("fulfillOrder", () => {
         orderId: "123",
       }),
     };
-    const lambda = {
-      invoke: fnSuccessReq({
-        Payload: JSON.stringify({
-          statusCode: 204,
-        }),
-      }),
-    };
     const dynamoDB = {
       get: fnSuccessReq({
         Item: {
           orderId: "123",
           version: 1,
           status: "CREATED",
-          amount: 200,
+          amount: 20,
         },
       }),
       update: fnErrorReq(),
     };
-    const response = await fulfillOrder(dynamoDB, lambda, event);
+    const response = await fulfillOrder(dynamoDB, null, event);
 
     expect(response).toMatchObject({
       statusCode: 500,
@@ -209,7 +192,7 @@ describe("fulfillOrder", () => {
     const response = await fulfillOrder(dynamoDB, null, event);
     expect(response).toMatchObject({
       statusCode: 500,
-      body: "Failed to fulfill order",
+      body: JSON.stringify({ message: "Failed to fulfill order" }),
     });
     expect(console.error).toHaveBeenCalled();
   });
@@ -228,7 +211,7 @@ describe("fulfillOrder", () => {
     const response = await fulfillOrder(dynamoDB, null, event);
     expect(response).toMatchObject({
       statusCode: 500,
-      body: "Failed to fulfill order",
+      body: JSON.stringify({ message: "Failed to fulfill order" }),
     });
     expect(console.error).toHaveBeenCalled();
     expect(console.error.mock.calls[0][0]).toEqual("Failed to fulfill order");
@@ -250,7 +233,7 @@ describe("fulfillOrder", () => {
     const response = await fulfillOrder(dynamoDB, null, event);
     expect(response).toMatchObject({
       statusCode: 500,
-      body: "Failed to fulfill order",
+      body: JSON.stringify({ message: "Failed to fulfill order" }),
     });
     expect(console.error).lastCalledWith("Failed to fulfill order", error);
   });

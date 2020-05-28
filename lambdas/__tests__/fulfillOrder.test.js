@@ -32,7 +32,7 @@ describe("fulfillOrder", () => {
         Attributes: {
           orderId: "123",
           version: 2,
-          status: "PROCESSING",
+          status: "FULFILLED",
           amount: 200,
         },
       }),
@@ -76,7 +76,7 @@ describe("fulfillOrder", () => {
         Attributes: {
           orderId: "123",
           version: 2,
-          status: "PROCESSING",
+          status: "FULFILLED",
           amount: 80,
         },
       }),
@@ -184,7 +184,7 @@ describe("fulfillOrder", () => {
         Item: {
           orderId: "123",
           version: 1,
-          status: "COMPLETED",
+          status: "FULFILLED",
           amount: 200,
         },
       }),

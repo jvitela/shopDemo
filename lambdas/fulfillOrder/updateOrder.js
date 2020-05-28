@@ -24,7 +24,7 @@ async function updateOrder(dynamoDB, orderId, numRetries = 3) {
         ":v": order.version,
         ":i": 1,
         ":C": "CREATED",
-        ":P": "PROCESSING",
+        ":P": "FULFILLED",
       },
       ExpressionAttributeNames: {
         "#status": "status",
